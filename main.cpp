@@ -49,6 +49,7 @@ static void DrawSubAear(HWND hwnd, RECT fullRect) {
   HBRUSH brushBckGround = CreateSolidBrush(RGB(0, 0, 0));
   FillRect(hdc, &overlayFullRect, brushBckGround);
   DeleteObject(brushBckGround);
+  // draw circle
 
   // draw front
   HBRUSH brushFG = CreateSolidBrush(RGB(128, 128, 128));
@@ -104,6 +105,27 @@ static void DrawSubAear(HWND hwnd, RECT fullRect) {
       EndPaint(hOverlay, &ps);
     }
   }
+
+  {
+    PAINTSTRUCT ps;
+    // HDC hdc = BeginPaint(hwnd, &ps);
+
+    int centerX = (overlayRect.left + overlayRect.right) / 2;
+    int centerY = (overlayRect.top + overlayRect.bottom) / 2;
+
+    // Set drawing color to black
+    HPEN hPen = CreatePen(PS_SOLID, 1, RGB(255, 0, 0));
+    HGDIOBJ hOldPen = SelectObject(hdc, hPen);
+
+    // Draw a circle with center at (100, 100) and radius 50
+    Ellipse(hdc, centerX - 10, centerY - 10, centerX + 10, centerY + 10);
+
+    // Clean up
+    SelectObject(hdc, hOldPen);
+    DeleteObject(hPen);
+
+    EndPaint(hwnd, &ps);
+  }
   DeleteObject(brushFG);
   ReleaseDC(hOverlay, hdc);
 }
@@ -124,7 +146,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
     // 注册全局热键（WIN+ SHIFT+F）
 
-    if (!RegisterHotKey(hwnd, HOTKEY_ID, MOD_CONTROL, 'F')) {
+    if (!RegisterHotKey(hwnd, HOTKEY_ID, MOD_WIN | MOD_CONTROL, 'G')) {
       MessageBox(hwnd, L"Hotkey registration failed!", L"Error",
                  MB_OK | MB_ICONERROR);
     }
