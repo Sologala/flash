@@ -123,7 +123,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     Shell_NotifyIcon(NIM_ADD, &nid);
 
     // 注册全局热键（WIN+ SHIFT+F）
-    if (!RegisterHotKey(hwnd, HOTKEY_ID, MOD_WIN | MOD_SHIFT, 'F')) {
+
+    if (!RegisterHotKey(hwnd, HOTKEY_ID, MOD_CONTROL, 'F')) {
       MessageBox(hwnd, L"Hotkey registration failed!", L"Error",
                  MB_OK | MB_ICONERROR);
     }
@@ -237,16 +238,16 @@ void HandleKeyDown(HWND hwnd, int key) {
       if (shiftPressed) {
         mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
         mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
-      }
-      if (ctrlPressed) {
-        mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
-        mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
-
+      } else if (ctrlPressed) {
+        mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+        mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+        Sleep(50);
+        mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+        mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
       } else {
         mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
         mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
       }
-
       DestroyWindow(hOverlay);
       hOverlay = NULL;
     } else {
@@ -278,16 +279,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
   MSG msg = {};
   while (GetMessage(&msg, NULL, 0, 0)) {
-    if (msg.message == wm_keydown) {
-      if (msg.wparam == vk_escape) {
-        destroywindow(hoverlay);
-        hoverlay = null;
-      } else if (msg.wparam == 'u' || msg.wparam == 'i' || msg.wparam == 'o' ||
-                 msg.wparam == 'j' || msg.wparam == 'k' || msg.wparam == 'l' ||
-                 msg.wparam == 'm' || msg.wparam == 0xbc || msg.wparam == 0xbe
+    if (msg.message == WM_KEYDOWN) {
+      if (msg.wParam == VK_ESCAPE) {
+        DestroyWindow(hOverlay);
+        hOverlay = NULL;
+      } else if (msg.wParam == 'U' || msg.wParam == 'I' || msg.wParam == 'O' ||
+                 msg.wParam == 'J' || msg.wParam == 'K' || msg.wParam == 'L' ||
+                 msg.wParam == 'M' || msg.wParam == 0xbc || msg.wParam == 0xbe
 
       ) {
-        handlekeydown(hwnd, msg.wparam);
+        HandleKeyDown(hwnd, msg.wParam);
       }
     }
     TranslateMessage(&msg);
